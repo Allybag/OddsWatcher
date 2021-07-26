@@ -1,9 +1,15 @@
 package oddswatcher;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 public class BetfairMarketReader
 {
@@ -11,13 +17,9 @@ public class BetfairMarketReader
     {
         BufferedReader reader = Files.newBufferedReader(Paths.get(path));
         String line;
-        // TODO: Temporary
-        int linesToRead = 10;
         while ((line = reader.readLine()) != null)
         {
             processLine(line);
-            if (--linesToRead == 0)
-                break;
         }
 
         return new BetfairMarket();
@@ -25,6 +27,7 @@ public class BetfairMarketReader
 
     void processLine(String line)
     {
-        System.out.println(line);
+        Gson gson = new Gson();
+        System.out.println(gson.fromJson(line, BetfairMessage.class));
     }
 }
