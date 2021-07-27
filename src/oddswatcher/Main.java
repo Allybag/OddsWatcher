@@ -25,6 +25,11 @@ public class Main {
                 System.out.println(pricePoint);
             }
 
+            Chart chart = new Chart(market.generatePriceLine(key));
+            chart.pack();
+            // RefineryUtilities.centreFrameOnScreen(chart);
+            chart.setVisible(true);
+
         } catch (IOException error) {
             System.err.println("Could not read file " + args[0]);
         }
