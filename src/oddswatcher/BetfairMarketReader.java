@@ -45,7 +45,7 @@ public class BetfairMarketReader
 
                             PriceUpdate.UpdateType type = PriceUpdate.UpdateType.Ask;
                             double price = priceSize.get(0);
-                            double size = priceSize.get(0);
+                            double size = priceSize.get(1);
 
                             ArrayList<PriceUpdate> runnerUpdates;
                             if (priceUpdates.containsKey(runnerChange.id))
