@@ -102,7 +102,7 @@ public class BetfairMessage
     public class RunnerChange
     {
         // [{"atb":[[1.23,28.95]],"id":1},{"atb":[[4.1,26.39]],"id":16},{"atb":[[8.8,25.54]],"id":15},{"atb":[[16.5,34.06]],"id":14},{"atb":[[18.5,33.21]],"id":13},{"atb":[[8.8,27.25]],"id":12},{"atb":[[17,5.95]],"id":9063256},{"atb":[[5.1,31.5]],"id":11},{"atb":[[2.88,33.21]],"id":10},{"atb":[[2.34,28.95]],"id":9},{"atb":[[6,34.06]],"id":8},{"atb":[[6.2,30.65]],"id":7},{"atb":[[4.2,28.1]],"id":6},{"atb":[[3.6,30.65]],"id":5},{"atb":[[2.74,29.8]],"id":4},{"atb":[[2.82,32.35]],"id":3},{"atb":[[2.64,28.95]],"id":2}]
-        int id;
+        long id;
         ArrayList<ArrayList<Double>> atb;
         ArrayList<ArrayList<Double>> atl;
 
