@@ -1,12 +1,13 @@
 package oddswatcher;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.text.ParseException;
 
 public class Main {
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws ParseException
     {
+        System.setProperty("user.timezone", "UTC");
         try
         {
             BetfairMarketReader reader = new BetfairMarketReader();
@@ -19,15 +20,8 @@ public class Main {
                 System.out.println("Runner " + runnerId + " has " + updateCount + " updates");
             }
 
-            long key = 1; // 0-0
-            for (BetfairMarket.PricePoint pricePoint : market.generatePriceLine(key))
-            {
-                System.out.println(pricePoint);
-            }
-
-            Chart chart = new Chart(market.generatePriceLine(key));
+            Chart chart = new Chart(market);
             chart.pack();
-            // RefineryUtilities.centreFrameOnScreen(chart);
             chart.setVisible(true);
 
         } catch (IOException error) {

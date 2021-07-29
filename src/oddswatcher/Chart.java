@@ -6,22 +6,36 @@ import org.jfree.chart.ui.ApplicationFrame;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 
 public class Chart extends ApplicationFrame
 {
-    public Chart(ArrayList<BetfairMarket.PricePoint> data)
+    public Chart(BetfairMarket market) throws ParseException
     {
         super("OddsWatcher");
-        XYSeries series = new XYSeries("Odds vs Time");
-        for (BetfairMarket.PricePoint pricePoint : data)
+
+        XYSeriesCollection chartData = new XYSeriesCollection();
+        for (long runnerId : market.mPriceUpdates.keySet())
         {
-            series.add(pricePoint.mTime, pricePoint.mPrice);
+            String runnerName = String.valueOf(runnerId); // Fallback
+            for (BetfairMessage.Runner runner : market.mDefinition.runners)
+            {
+                if (runner.id == runnerId)
+                    runnerName = runner.name;
+            }
+
+            XYSeries series = new XYSeries(runnerName);
+            for (BetfairMarket.PricePoint pricePoint : market.generatePriceLine(runnerId))
+            {
+                series.add(pricePoint.mTime, pricePoint.mPrice);
+            }
+
+            chartData.addSeries(series);
         }
 
-        XYSeriesCollection chartData = new XYSeriesCollection(series);
         JFreeChart chart = ChartFactory.createXYLineChart(
-                "OddsWatcher", "Odds", "Time", chartData, PlotOrientation.VERTICAL, true, true, false);
+                "OddsWatcher", "Time", "Percentage", chartData, PlotOrientation.VERTICAL, true, true, false);
 
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
