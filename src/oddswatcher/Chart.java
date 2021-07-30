@@ -35,7 +35,7 @@ public class Chart extends ApplicationFrame
         }
 
         JFreeChart chart = ChartFactory.createXYLineChart(
-                market.mDefinition.name, "Seconds since start", "% Chance of Winning", chartData, PlotOrientation.VERTICAL, true, true, false);
+                market.mDefinition.name, "Seconds since start", "Odds Implied Winning %", chartData, PlotOrientation.VERTICAL, true, true, false);
 
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));

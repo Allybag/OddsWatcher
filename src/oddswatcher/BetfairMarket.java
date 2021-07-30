@@ -56,25 +56,14 @@ public class BetfairMarket
     {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Date marketStartTime = dateFormat.parse(mDefinition.marketTime);
-        System.out.println(marketStartTime);
         ArrayList<PricePoint> priceLine = new ArrayList<>();
 
         Set<Double> activePrices = new HashSet<>();
-        boolean firstPrice = false;
-        boolean goalScored = false;
         for (PriceUpdate update : mPriceUpdates.get(runnerId))
         {
-            Date updateTime = new Date(update.mTime);
-            long timeSinceStart = updateTime.getTime() - marketStartTime.getTime();
-            assert updateTime.getTime() == update.mTime;
+            long timeSinceStart = update.mTime - marketStartTime.getTime();
             if (timeSinceStart < 0)
                 continue;
-
-            if (!firstPrice)
-            {
-                System.out.println("Received first in play price at " + updateTime);
-                firstPrice = true;
-            }
 
             double percentage = (1.0 / update.mPrice) * 100.0;
             if (update.mSize == 0)
@@ -86,15 +75,12 @@ public class BetfairMarket
                 continue;
 
             double bestPrice = Collections.min(activePrices);
+
+            // Don't add duplicate points
+            if (!priceLine.isEmpty() && Math.abs(bestPrice - priceLine.get(priceLine.size() - 1).mPrice) < 0.01)
+                continue;
+
             priceLine.add(new PricePoint(timeSinceStart / 1000, bestPrice));
-
-            if (!goalScored && bestPrice < 0.2)
-            {
-                System.out.println("Goal! Scored at " + updateTime);
-                goalScored = true;
-            }
-
-            System.out.println("BestPrice: " + bestPrice + " at " + updateTime);
         }
 
         return priceLine;
@@ -120,7 +106,6 @@ public class BetfairMarket
         int runnerCount = mDefinition.runners.size();
         for (int runnerIndex = 0; runnerIndex < runnerCount; runnerIndex++)
         {
-            System.out.println("runnerIndex=" + runnerIndex + ",runnerCount=" + runnerCount);
             BetfairMessage.Runner runner = mDefinition.runners.get(runnerIndex);
             legend.append(",").append(runner.name);
             ArrayList<PricePoint> priceLine = generatePriceLine(runner.id);
