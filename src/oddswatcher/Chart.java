@@ -13,7 +13,7 @@ public class Chart extends ApplicationFrame
 {
     public Chart(BetfairMarket market) throws ParseException
     {
-        super("OddsWatcher");
+        super(market.mDefinition.eventName);
 
         XYSeriesCollection chartData = new XYSeriesCollection();
         for (long runnerId : market.mPriceUpdates.keySet())
@@ -35,7 +35,7 @@ public class Chart extends ApplicationFrame
         }
 
         JFreeChart chart = ChartFactory.createXYLineChart(
-                "OddsWatcher", "Time", "Percentage", chartData, PlotOrientation.VERTICAL, true, true, false);
+                market.mDefinition.name, "Seconds since start", "% Chance of Winning", chartData, PlotOrientation.VERTICAL, true, true, false);
 
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));

@@ -1,13 +1,28 @@
 package oddswatcher;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.*;
 
 public class BetfairMarket
 {
+    static class NumericCsvComparator implements Comparator<String>
+    {
+        public int compare(String firstRow, String secondRow)
+        {
+            String firstField = firstRow.substring(0, firstRow.indexOf(','));
+            String secondField = secondRow.substring(0, secondRow.indexOf(','));
+
+            double firstNum = Double.parseDouble(firstField);
+            double secondNum = Double.parseDouble(secondField);
+            return Double.compare(firstNum, secondNum);
+        }
+    }
+
     public BetfairMarket(BetfairMessage.MarketDefinition definition, HashMap<Long, ArrayList<PriceUpdate>> priceUpdates)
     {
         mDefinition = definition;
@@ -88,5 +103,44 @@ public class BetfairMarket
     BetfairMessage.MarketDefinition mDefinition;
     HashMap<Long, ArrayList<PriceUpdate>> mPriceUpdates;
 
+
+    public void exportCsv() throws IOException, ParseException
+    {
+        // Csv Format should be like this:
+        // Seconds,FirstHorse,SecondHorse,ThirdHorse,LastHorse
+        // 0,50,,,
+        // 1,,30,,
+        // 1,,,20,
+        // 2,,,,0
+
+        String fileName = mDefinition.eventName + "." + mDefinition.name + ".csv";
+
+        ArrayList<String> data = new ArrayList<>();
+        StringBuilder legend = new StringBuilder("Seconds");
+        int runnerCount = mDefinition.runners.size();
+        for (int runnerIndex = 0; runnerIndex < runnerCount; runnerIndex++)
+        {
+            System.out.println("runnerIndex=" + runnerIndex + ",runnerCount=" + runnerCount);
+            BetfairMessage.Runner runner = mDefinition.runners.get(runnerIndex);
+            legend.append(",").append(runner.name);
+            ArrayList<PricePoint> priceLine = generatePriceLine(runner.id);
+            for (BetfairMarket.PricePoint pricePoint : priceLine)
+            {
+                String row = String.valueOf(pricePoint.mTime);
+                row = row + String.join("", Collections.nCopies(runnerIndex + 1, ","));
+                row = row + pricePoint.mPrice;
+                row = row + String.join("", Collections.nCopies((runnerCount - (runnerIndex + 1)), ","));
+                data.add(row);
+            }
+        }
+
+        data.sort(new NumericCsvComparator());
+
+        PrintWriter writer = new PrintWriter(fileName, StandardCharsets.UTF_8);
+        writer.println(legend);
+        for (String row : data)
+            writer.println(row);
+        writer.close();
+    }
 
 }
